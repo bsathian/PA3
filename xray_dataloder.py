@@ -4,19 +4,19 @@
 # Code author: Jenny Hamer
 #
 #
-# Description: 
+# Description:
 # This code defines a custom PyTorch Dataset object suited for the
 # NIH ChestX-ray14 dataset of 14 common thorax diseases. This dataset contains
 # 112,120 images (frontal-view X-rays) from 30,805 unique patients. Each image
 # may be labeled with a single disease or multiple (multi-label). The nominative
-# labels are mapped to an integer between 0-13, which is later converted into 
+# labels are mapped to an integer between 0-13, which is later converted into
 # an n-hot binary encoded label.
-# 
 #
-# Dataset citation: 
+#
+# Dataset citation:
 # X. Wang, Y. Peng , L. Lu Hospital-scale Chest X-ray Database and Benchmarks on
-# Weakly-Supervised Classification and Localization of Common Thorax Diseases. 
-# Department of Radiology and Imaging Sciences, September 2017. 
+# Weakly-Supervised Classification and Localization of Common Thorax Diseases.
+# Department of Radiology and Imaging Sciences, September 2017.
 # https://arxiv.org/pdf/1705.02315.pdf
 ################################################################################
 
@@ -29,7 +29,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 # Other libraries for data manipulation and visualization
 import os
 from PIL import Image
-import numpy as np 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -43,15 +43,15 @@ class ChestXrayDataset(Dataset):
 
     The expected dataset is stored in the "/datasets/ChestXray-NIHCC/" on ieng6
     """
-    
+
     def __init__(self, transform=transforms.ToTensor(), color='L'):
         """
         Args:
         -----
-        - transform: A torchvision.transforms object - 
+        - transform: A torchvision.transforms object -
                      transformations to apply to each image
                      (Can be "transforms.Compose([transforms])")
-        - color: Specifies image-color format to convert to 
+        - color: Specifies image-color format to convert to
                  (default is L: 8-bit pixels, black and white)
 
         Attributes:
@@ -62,30 +62,30 @@ class ChestXrayDataset(Dataset):
         - labels: An array of labels corresponding to the each sample
         - classes: A dictionary mapping each disease name to an int between [0, 13]
         """
-        
+
         self.transform = transform
         self.color = color
-        self.image_dir = "/datasets/ChestXray-NIHCC/images/"
-        self.image_info = pd.read_csv("/datasets/ChestXray-NIHCC/Data_Entry_2017.csv")
+        self.image_dir = "../dataset/images"
+        self.image_info = pd.read_csv("../dataset/Data_Entry_2017.csv")
         self.image_filenames = self.image_info["Image Index"]
         self.labels = self.image_info["Finding Labels"]
-        self.classes = {0: "Atelectasis", 1: "Cardiomegaly", 2: "Effusion", 
-                3: "Infiltration", 4: "Mass", 5: "Nodule", 6: "Pneumonia", 
-                7: "Pneumothorax", 8: "Consolidation", 9: "Edema", 
-                10: "Emphysema", 11: "Fibrosis", 
+        self.classes = {0: "Atelectasis", 1: "Cardiomegaly", 2: "Effusion",
+                3: "Infiltration", 4: "Mass", 5: "Nodule", 6: "Pneumonia",
+                7: "Pneumothorax", 8: "Consolidation", 9: "Edema",
+                10: "Emphysema", 11: "Fibrosis",
                 12: "Pleural_Thickening", 13: "Hernia"}
 
-        
+
     def __len__(self):
-        
+
         # Return the total number of data samples
         return len(self.image_filenames)
 
 
     def __getitem__(self, ind):
-        """Returns the image and its label at the index 'ind' 
+        """Returns the image and its label at the index 'ind'
         (after applying transformations to the image, if specified).
-        
+
         Params:
         -------
         - ind: (int) The index of the image to get
@@ -94,32 +94,32 @@ class ChestXrayDataset(Dataset):
         --------
         - A tuple (image, label)
         """
-        
+
         # Compose the path to the image file from the image_dir + image_name
         image_path = os.path.join(self.image_dir, self.image_filenames.ix[ind])
-        
+
         # Load the image
         image = Image.open(image_path).convert(mode=str(self.color))
 
         # If a transform is specified, apply it
         if self.transform is not None:
             image = self.transform(image)
-            
+
         # Verify that image is in Tensor format
         if type(image) is not torch.Tensor:
             image = transform.ToTensor(image)
 
-        # Convert multi-class label into binary encoding 
+        # Convert multi-class label into binary encoding
         label = self.convert_label(self.labels[ind], self.classes)
-        
+
         # Return the image and its label
         return (image, label)
 
-    
+
 
     def convert_label(self, label, classes):
         """Convert the numerical label to n-hot encoding.
-        
+
         Params:
         -------
         - label: a string of conditions corresponding to an image's class
@@ -128,19 +128,19 @@ class ChestXrayDataset(Dataset):
         --------
         - binary_label: (Tensor) a binary encoding of the multi-class label
         """
-        
+
         binary_label = torch.zeros(len(classes))
         for key, value in classes.items():
             if value in label:
                 binary_label[key] = 1.0
         return binary_label
-    
-    
+
+
 
 def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
-                         p_val=0.1, p_test=0.2, shuffle=True, 
+                         p_val=0.1, p_test=0.2, shuffle=True,
                          show_sample=False, extras={}):
-    """ Creates the DataLoader objects for the training, validation, and test sets. 
+    """ Creates the DataLoader objects for the training, validation, and test sets.
 
     Params:
     -------
@@ -152,10 +152,10 @@ def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
     - p_test: (float) Percent (as decimal) of the dataset to split for testing
     - shuffle: (bool) Indicate whether to shuffle the dataset before splitting
     - show_sample: (bool) Plot a mini-example as a grid of the dataset
-    - extras: (dict) 
+    - extras: (dict)
         If CUDA/GPU computing is supported, contains:
         - num_workers: (int) Number of subprocesses to use while loading the dataset
-        - pin_memory: (bool) For use with CUDA - copy tensors into pinned memory 
+        - pin_memory: (bool) For use with CUDA - copy tensors into pinned memory
                   (set to True if using a GPU)
         Otherwise, extras is an empty dict.
 
@@ -177,15 +177,15 @@ def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
     if shuffle:
         np.random.seed(seed)
         np.random.shuffle(all_indices)
-    
+
     # Create the validation split from the full dataset
     val_split = int(np.floor(p_val * dataset_size))
     train_ind, val_ind = all_indices[val_split :], all_indices[: val_split]
-    
+
     # Separate a test split from the training dataset
     test_split = int(np.floor(p_test * len(train_ind)))
     train_ind, test_ind = train_ind[test_split :], train_ind[: test_split]
-    
+
     # Use the SubsetRandomSampler as the iterator for each subset
     sample_train = SubsetRandomSampler(train_ind)
     sample_test = SubsetRandomSampler(test_ind)
@@ -197,20 +197,20 @@ def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
     if extras:
         num_workers = extras["num_workers"]
         pin_memory = extras["pin_memory"]
-        
+
     # Define the training, test, & validation DataLoaders
-    train_loader = DataLoader(dataset, batch_size=batch_size, 
-                              sampler=sample_train, num_workers=num_workers, 
+    train_loader = DataLoader(dataset, batch_size=batch_size,
+                              sampler=sample_train, num_workers=num_workers,
                               pin_memory=pin_memory)
 
-    test_loader = DataLoader(dataset, batch_size=batch_size, 
-                             sampler=sample_test, num_workers=num_workers, 
+    test_loader = DataLoader(dataset, batch_size=batch_size,
+                             sampler=sample_test, num_workers=num_workers,
                               pin_memory=pin_memory)
 
     val_loader = DataLoader(dataset, batch_size=batch_size,
-                            sampler=sample_val, num_workers=num_workers, 
+                            sampler=sample_val, num_workers=num_workers,
                               pin_memory=pin_memory)
 
-    
+
     # Return the training, validation, test DataLoader objects
     return (train_loader, val_loader, test_loader)

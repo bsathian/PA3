@@ -76,7 +76,7 @@ class BasicCNN(nn.Module):
         # Define 2 fully connected layers:
         #TODO: fc1's in_features value is computed in the same manner as in Part 1, Question 4. initialization: xavier
 
-        self.fc1 = nn.Linear(in_features=335*335*8, out_features=128)
+        self.fc1 = nn.Linear(in_features=164*164*8, out_features=128)
         self.fc1_normed = nn.BatchNorm1d(128)
         torch_init.xavier_normal_(self.fc1.weight)
 

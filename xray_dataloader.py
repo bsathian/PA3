@@ -168,6 +168,8 @@ def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
 
     # Get create a ChestXrayDataset object
     dataset = ChestXrayDataset(transform)
+    checkImage,checkLabel = dataset[0]
+    print("Image size=",checkImage.shape)
 
     # Dimensions and indices of training set
     dataset_size = len(dataset)

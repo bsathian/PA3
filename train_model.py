@@ -12,14 +12,14 @@ import torch
 
 # Setup: initialize the hyperparameters/variables
 num_epochs = 1           # Number of full passes through the dataset
-batch_size = 2          # Number of samples in each minibatch
-learning_rate = 0.001  
+batch_size = 32          # Number of samples in each minibatch
+learning_rate = 0.001
 seed = np.random.seed(1) # Seed the random number generator for reproducibility
 p_val = 0.1              # Percent of the overall dataset to reserve for validation
 p_test = 0.2             # Percent of the overall dataset to reserve for testing
 
 #TODO: Convert to Tensor - you can later add other transformations, such as Scaling here
-transform = transforms.Compose([transforms.ToTensor()])
+transform = transforms.Compose([transforms.Resize((512,512)),transforms.ToTensor()])
 
 
 # Check if your system supports CUDA
@@ -36,9 +36,9 @@ else: # Otherwise, train on the CPU
     print("CUDA NOT supported")
 
 # Setup the training, validation, and testing dataloaders
-train_loader, val_loader, test_loader = create_split_loaders(batch_size, seed, transform=transform, 
+train_loader, val_loader, test_loader = create_split_loaders(batch_size, seed, transform=transform,
                                                              p_val=p_val, p_test=p_test,
-                                                             shuffle=True, show_sample=False, 
+                                                             shuffle=True, show_sample=False,
                                                              extras=extras)
 
 # Instantiate a BasicCNN to run on the GPU or CPU based on CUDA support
@@ -64,7 +64,7 @@ avg_minibatch_loss = []
 for epoch in range(num_epochs):
 
     N = 50
-    N_minibatch_loss = 0.0    
+    N_minibatch_loss = 0.0
 
     # Get the next minibatch of images, labels for training
     for minibatch_count, (images, labels) in enumerate(train_loader, 0):
@@ -78,7 +78,7 @@ for epoch in range(num_epochs):
         # Perform the forward pass through the network and compute the loss
         outputs = model(images)
         loss = criterion(outputs, labels)
-        
+
         # Automagically compute the gradients and backpropagate the loss through the network
         loss.backward()
 
@@ -88,16 +88,16 @@ for epoch in range(num_epochs):
         # Add this iteration's loss to the total_loss
         total_loss.append(loss.item())
         N_minibatch_loss += loss
-        
+
         #TODO: Implement cross-validation
-        
-        if minibatch_count % N == 0:    
-            
-            # Print the loss averaged over the last N mini-batches    
+
+        if minibatch_count % N == 0:
+
+            # Print the loss averaged over the last N mini-batches
             N_minibatch_loss /= N
             print('Epoch %d, average minibatch %d loss: %.3f' %
                 (epoch + 1, minibatch_count, N_minibatch_loss))
-            
+
             # Add the averaged loss over N minibatches and reset the counter
             avg_minibatch_loss.append(N_minibatch_loss)
             N_minibatch_loss = 0.0

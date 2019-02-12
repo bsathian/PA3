@@ -41,7 +41,7 @@ import os
 
 
 class Arch1CNN(nn.Module):
-    """ 
+    """
     conv1 -> conv2 -> maxpool -> conv3 -> conv4 -> conv5 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
     """
 
@@ -65,9 +65,9 @@ class Arch1CNN(nn.Module):
         self.conv2_normed = nn.BatchNorm2d(10)
         torch_init.xavier_normal_(self.conv2.weight)
         #Maxpool
-        self.pool = nn.MaxPool2d(kernel_size=3, stride=1)
-        
-        
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=1)
+
+
         #TODO: conv3: X input channels, 12 output channels, [8x8] kernel, initialization: xavier
         self.conv3 = nn.Conv2d(in_channels=10, out_channels=12, kernel_size=8)
         self.conv3_normed = nn.BatchNorm2d(12)
@@ -80,22 +80,22 @@ class Arch1CNN(nn.Module):
         self.conv5 = nn.Conv2d(in_channels=10, out_channels=8, kernel_size=5)
         self.conv5_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv5.weight)
-        
-        
+
+
         #TODO: Apply max-pooling with a [3x3] kernel using tiling (*NO SLIDING WINDOW*)
-        self.pool = nn.MaxPool2d(kernel_size=3, stride=3)
+        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=3)
 
         # Define 2 fully connected layers:
         #TODO: fc1
         self.fc1 = nn.Linear(in_features=160*160*8, out_features=512)
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
-        
+
         #TODO: fc2
         self.fc2 = nn.Linear(in_features=512, out_features=128)
         self.fc2_normed = nn.BatchNorm1d(128)
         torch_init.xavier_normal_(self.fc2.weight)
-        
+
         #TODO: fc3
         self.fc3 = nn.Linear(in_features=128, out_features=14)
         torch_init.xavier_normal_(self.fc3.weight)
@@ -126,13 +126,13 @@ class Arch1CNN(nn.Module):
 
         # Apply conv2 and conv3 similarly
         batch = func.relu(self.conv2_normed(self.conv2(batch)))
-        batch = self.pool(batch)
-        
+        batch = self.pool1(batch)
+
         batch = func.relu(self.conv3_normed(self.conv3(batch)))
         batch = func.relu(self.conv4_normed(self.conv4(batch)))
         batch = func.relu(self.conv5_normed(self.conv5(batch)))
         # Pass the output of conv3 to the pooling layer
-        batch = self.pool(batch)
+        batch = self.pool2(batch)
 
         # Reshape the output of the conv3 to pass to fully-connected layer
         batch = batch.view(-1, self.num_flat_features(batch))

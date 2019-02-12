@@ -76,8 +76,8 @@ class Arch1CNN(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=12, out_channels=10, kernel_size=6)
         self.conv4_normed = nn.BatchNorm2d(10)
         torch_init.xavier_normal_(self.conv4.weight)
-        #TODO: conv5: X input channels, 8 output channels, [6x6] kernel, initialization: xavier
-        self.conv5 = nn.Conv2d(in_channels=10, out_channels=8, kernel_size=6)
+        #TODO: conv5: X input channels, 8 output channels, [5x5] kernel, initialization: xavier
+        self.conv5 = nn.Conv2d(in_channels=10, out_channels=8, kernel_size=5)
         self.conv5_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv5.weight)
         
@@ -87,7 +87,7 @@ class Arch1CNN(nn.Module):
 
         # Define 2 fully connected layers:
         #TODO: fc1
-        self.fc1 = nn.Linear(in_features=477*477*6, out_features=512)
+        self.fc1 = nn.Linear(in_features=160*160*8, out_features=512)
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
         

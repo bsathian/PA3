@@ -106,7 +106,7 @@ for epoch in range(num_epochs):
 
     #Validation
     temp_validation = 0
-    for images,labels in enumerate(val_loader,0):
+    for minibatch_count,(images,labels) in enumerate(val_loader,0):
         images,labels = images.to(computing_device),labels.to(computing_device)
         outputs = model.forward(images)
         loss = criterion(outputs,labels)

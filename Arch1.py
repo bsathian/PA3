@@ -32,7 +32,7 @@ import torch.optim as optim
 # Data utils and dataloader
 import torchvision
 from torchvision import transforms, utils
-from xray_dataloader import ChestXrayDataset, create_split_loaders
+from xray_dataloader_zscored import ChestXrayDataset, create_split_loaders
 
 import matplotlib.pyplot as plt
 import numpy as np

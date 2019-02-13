@@ -114,7 +114,7 @@ for epoch in range(num_epochs):
 
     print("Validation loss after ",epoch," epochs=",temp_loss)
     validation_loss.append(temp_validation)
-    if validation_loss[-1] > validation_loss[-2]:
+    if validation_loss[-1] > validation_loss[-2] and epoch >= 1:
         break
 
 print("Training complete after", epoch, "epochs")

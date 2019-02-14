@@ -19,8 +19,8 @@ p_val = 0.1              # Percent of the overall dataset to reserve for validat
 p_test = 0.2             # Percent of the overall dataset to reserve for testing
 
 #TODO: Convert to Tensor - you can later add other transformations, such as Scaling here
-transform = transforms.Compose([transforms.Resize((512,512)),transforms.ToTensor()])
-
+transform = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor()])
+transform2 = transforms.Compose([transforms.Resize((256,256)),transforms.RandomHorizontalFlip(p=1.0),transforms.ToTensor()])
 
 # Check if your system supports CUDA
 use_cuda = torch.cuda.is_available()
@@ -36,11 +36,21 @@ else: # Otherwise, train on the CPU
     print("CUDA NOT supported")
 
 # Setup the training, validation, and testing dataloaders
-train_loader, val_loader, test_loader = create_split_loaders(batch_size, seed, transform=transform,
+train_loader1, val_loader1, test_loader1 = create_split_loaders(batch_size, seed, transform=transform,
                                                              p_val=p_val, p_test=p_test,
                                                              shuffle=True, show_sample=False,
                                                              extras=extras)
 
+train_loader2, val_loader2, test_loader2 = create_split_loaders(batch_size, seed, transform=transform2,
+                                                             p_val=p_val, p_test=p_test,
+                                                             shuffle=True, show_sample=False,
+                                                             extras=extras)
+train_loader_list = [train_loader1,train_loader2]
+#train_loader = torch.utils.data.DataLoader(torch.utils.data.ConcatDataset([train_loader,train_loader2]))
+val_loader_list = [val_loader1, val_loader2]
+test_loader_list=[test_loader1,test_loader2]
+#val_loader = torch.utils.data.ConcatDataset([val_loader,val_loader2])
+#test_loader = torch.utils.data.ConcatDataset([test_loader,test_loader2])
 # Instantiate a BasicCNN to run on the GPU or CPU based on CUDA support
 model = Arch1CNN()
 model = model.to(computing_device)
@@ -66,54 +76,56 @@ for epoch in range(num_epochs):
 
     N = 50
     N_minibatch_loss = 0.0
-
+    
     # Get the next minibatch of images, labels for training
-    for minibatch_count, (images, labels) in enumerate(train_loader, 0):
+    for train_loader in train_loader_list:
+        for minibatch_count, (images, labels) in enumerate(train_loader, 0):
 
-        # Put the minibatch data in CUDA Tensors and run on the GPU if supported
-        images, labels = images.to(computing_device), labels.to(computing_device)
+            # Put the minibatch data in CUDA Tensors and run on the GPU if supported
+            images, labels = images.to(computing_device), labels.to(computing_device)
 
-        # Zero out the stored gradient (buffer) from the previous iteration
-        optimizer.zero_grad()
+            # Zero out the stored gradient (buffer) from the previous iteration
+            optimizer.zero_grad()
 
-        # Perform the forward pass through the network and compute the loss
-        outputs = model(images)
-        loss = criterion(outputs, labels)
+            # Perform the forward pass through the network and compute the loss
+            outputs = model(images)
+            loss = criterion(outputs, labels)
 
-        # Automagically compute the gradients and backpropagate the loss through the network
-        loss.backward()
+            # Automagically compute the gradients and backpropagate the loss through the network
+            loss.backward()
 
-        # Update the weights
-        optimizer.step()
+            # Update the weights
+            optimizer.step()
 
-        # Add this iteration's loss to the total_loss
-        total_loss.append(loss.item())
-        N_minibatch_loss += loss
+            # Add this iteration's loss to the total_loss
+            total_loss.append(loss.item())
+            N_minibatch_loss += loss
 
-        #TODO: Implement cross-validation
+            #TODO: Implement cross-validation
 
-        if minibatch_count % N == 0:
+            if minibatch_count % N == 0:
 
-            # Print the loss averaged over the last N mini-batches
-            N_minibatch_loss /= N
-            print('Epoch %d, average minibatch %d loss: %.3f' %
-                (epoch + 1, minibatch_count, N_minibatch_loss))
+                # Print the loss averaged over the last N mini-batches
+                N_minibatch_loss /= N
+                print('Epoch %d, average minibatch %d loss: %.3f' %
+                    (epoch + 1, minibatch_count, N_minibatch_loss))
 
-            # Add the averaged loss over N minibatches and reset the counter
-            avg_minibatch_loss.append(N_minibatch_loss)
-            N_minibatch_loss = 0.0
+                # Add the averaged loss over N minibatches and reset the counter
+                avg_minibatch_loss.append(N_minibatch_loss)
+                N_minibatch_loss = 0.0
 
     print("Finished", epoch + 1, "epochs of training")
 
     #Validation
     temp_validation = 0
-    for minibatch_count,(images,labels) in enumerate(val_loader,0):
-        images,labels = images.to(computing_device),labels.to(computing_device)
-        outputs = model.forward(images)
-        loss = criterion(outputs,labels)
-        temp_valiation += loss
+    for val_loader in val_loader_list:
+        for minibatch_count,(images,labels) in enumerate(val_loader,0):
+            images,labels = images.to(computing_device),labels.to(computing_device)
+            outputs = model.forward(images)
+            loss = criterion(outputs,labels)
+            temp_valiation += loss
 
-    print("Validation loss after ",epoch," epochs=",temp_loss)
+    print("Validation loss after ",epoch," epochs=",temp_validation)
     validation_loss.append(temp_validation)
     if validation_loss[-1] > validation_loss[-2] and epoch >= 1:
         break
@@ -128,6 +140,7 @@ print("Training complete after", epoch, "epochs")
 
 
 # In[ ]:
+
 
 
 

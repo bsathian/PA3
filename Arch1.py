@@ -87,7 +87,7 @@ class Arch1CNN(nn.Module):
 
         # Define 2 fully connected layers:
         #TODO: fc1
-        self.fc1 = nn.Linear(in_features=160*160*8, out_features=512)
+        self.fc1 = nn.Linear(in_features=74*74*8, out_features=512)
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
 
@@ -147,7 +147,7 @@ class Arch1CNN(nn.Module):
 
         # Return the class predictions
         #TODO: apply an activition function to 'batch'
-        batch = func.sigmoid(batch)
+        #batch = func.sigmoid(batch)
         return batch
 
     def num_flat_features(self, inputs):

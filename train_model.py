@@ -110,9 +110,9 @@ for epoch in range(num_epochs):
         images,labels = images.to(computing_device),labels.to(computing_device)
         outputs = model.forward(images)
         loss = criterion(outputs,labels)
-        temp_valiation += loss
+        temp_validation += loss
 
-    print("Validation loss after ",epoch," epochs=",temp_loss)
+    print("Validation loss after ",epoch," epochs=",temp_validation)
     validation_loss.append(temp_validation)
     if validation_loss[-1] > validation_loss[-2] and epoch >= 1:
         break

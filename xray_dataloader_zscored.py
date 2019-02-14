@@ -107,10 +107,8 @@ class ChestXrayDataset(Dataset):
         # If a transform is specified, apply it
         if self.transform is not None:
             image = self.transform(image)
-        
         image = (image - image.mean())/image.std()
-       
-
+        
         # Verify that image is in Tensor format
         if type(image) is not torch.Tensor:
             image = transform.ToTensor(image)

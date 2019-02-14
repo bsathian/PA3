@@ -126,7 +126,7 @@ class BasicCNN(nn.Module):
 
         # Return the class predictions
         #TODO: apply an activition function to 'batch'
-        batch = func.sigmoid(batch)
+        #batch = func.sigmoid(batch)
         return batch
 
     def num_flat_features(self, inputs):

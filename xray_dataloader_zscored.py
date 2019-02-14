@@ -20,6 +20,7 @@
 # https://arxiv.org/pdf/1705.02315.pdf
 ################################################################################
 
+
 # PyTorch imports
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -101,11 +102,14 @@ class ChestXrayDataset(Dataset):
         # Load the image
         image = Image.open(image_path).convert(mode=str(self.color))
 
-        image = (image - np.average(image))/np.std(image)
+        #image = (image - np.average(image))/np.std(image)
 
         # If a transform is specified, apply it
         if self.transform is not None:
             image = self.transform(image)
+
+        image = (image - np.average(image))/np.std(image)
+
 
         # Verify that image is in Tensor format
         if type(image) is not torch.Tensor:
@@ -113,6 +117,8 @@ class ChestXrayDataset(Dataset):
 
         # Convert multi-class label into binary encoding
         label = self.convert_label(self.labels[ind], self.classes)
+
+
 
         # Return the image and its label
         return (image, label)

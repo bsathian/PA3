@@ -66,8 +66,8 @@ class ChestXrayDataset(Dataset):
 
         self.transform = transform
         self.color = color
-        self.image_dir = "../dataset/images"
-        self.image_info = pd.read_csv("../dataset/Data_Entry_2017.csv")
+        self.image_dir = "/datasets/ChestXray-NIHCC/images"
+        self.image_info = pd.read_csv("/datasets/ChestXray-NIHCC/Data_Entry_2017.csv")
         self.image_filenames = self.image_info["Image Index"]
         self.labels = self.image_info["Finding Labels"]
         self.classes = {0: "Atelectasis", 1: "Cardiomegaly", 2: "Effusion",
@@ -107,9 +107,9 @@ class ChestXrayDataset(Dataset):
         # If a transform is specified, apply it
         if self.transform is not None:
             image = self.transform(image)
-
-        image = (image - np.average(image))/np.std(image)
-
+        
+        image = (image - image.mean())/image.std()
+       
 
         # Verify that image is in Tensor format
         if type(image) is not torch.Tensor:

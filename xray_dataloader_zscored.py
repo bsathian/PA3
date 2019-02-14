@@ -108,7 +108,8 @@ class ChestXrayDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        image = (image - np.average(image))/np.std(image)
+        print(type(image))
+        image = (image - image.mean())/image.std()
 
 
         # Verify that image is in Tensor format

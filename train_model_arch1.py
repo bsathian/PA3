@@ -19,8 +19,8 @@ p_val = 0.1              # Percent of the overall dataset to reserve for validat
 p_test = 0.2             # Percent of the overall dataset to reserve for testing
 
 #TODO: Convert to Tensor - you can later add other transformations, such as Scaling here
-transform = transforms.Compose([transforms.Resize((512,512)),transforms.ToTensor()])
-
+transform = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor()])
+transform2 = transforms.Compose([transforms.Resize((256,256)),transforms.RandomHorizontalFlip(p=1.0),transforms.ToTensor()])
 
 # Check if your system supports CUDA
 use_cuda = torch.cuda.is_available()
@@ -41,6 +41,15 @@ train_loader, val_loader, test_loader = create_split_loaders(batch_size, seed, t
                                                              shuffle=True, show_sample=False,
                                                              extras=extras)
 
+train_loader2, val_loader2, test_loader2 = create_split_loaders(batch_size, seed, transform=transform2,
+                                                             p_val=p_val, p_test=p_test,
+                                                             shuffle=True, show_sample=False,
+                                                             extras=extras)
+
+#train_loader = torch.utils.data.DataLoader(torch.utils.data.ConcatDataset([train_loader,train_loader2]))
+print(type(train_loader))
+#val_loader = torch.utils.data.ConcatDataset([val_loader,val_loader2])
+#test_loader = torch.utils.data.ConcatDataset([test_loader,test_loader2])
 # Instantiate a BasicCNN to run on the GPU or CPU based on CUDA support
 model = Arch1CNN()
 model = model.to(computing_device)

@@ -76,7 +76,7 @@ for epoch in range(num_epochs):
 
     N = 50
     N_minibatch_loss = 0.0
-    
+
     # Get the next minibatch of images, labels for training
     for train_loader in train_loader_list:
         for minibatch_count, (images, labels) in enumerate(train_loader, 0):
@@ -123,7 +123,7 @@ for epoch in range(num_epochs):
             images,labels = images.to(computing_device),labels.to(computing_device)
             outputs = model.forward(images)
             loss = criterion(outputs,labels)
-            temp_validation += loss
+            temp_validation += loss.item()
 
     print("Validation loss after ",epoch," epochs=",temp_validation)
     validation_loss.append(temp_validation)

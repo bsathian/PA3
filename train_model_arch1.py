@@ -83,6 +83,7 @@ for epoch in range(num_epochs):
     N_minibatch_loss = 0.0
 
     # Get the next minibatch of images, labels for training
+    model.train()
     for train_loader in train_loader_list:
         for minibatch_count, (images, labels) in enumerate(train_loader, 0):
 
@@ -123,10 +124,11 @@ for epoch in range(num_epochs):
 
     #Validation
     temp_validation = 0
+    model.eval()
     for val_loader in val_loader_list:
         for minibatch_count,(images,labels) in enumerate(val_loader,0):
             images,labels = images.to(computing_device),labels.to(computing_device)
-            outputs = model.forward(images)
+            outputs = model(images)
             loss = criterion(outputs,labels)
             temp_validation += loss.item()
 
@@ -136,7 +138,7 @@ for epoch in range(num_epochs):
         break
 
 print("Training complete after", epoch, "epochs")
-
+torch.save(model.state_dict(),"arch1.pt")
 
 # In[ ]:
 

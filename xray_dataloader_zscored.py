@@ -108,7 +108,7 @@ class ChestXrayDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
         image = (image - image.mean())/image.std()
-        
+
         # Verify that image is in Tensor format
         if type(image) is not torch.Tensor:
             image = transform.ToTensor(image)
@@ -142,6 +142,17 @@ class ChestXrayDataset(Dataset):
         return binary_label
 
 
+
+def get_weights():
+    weights = np.zeros(14)
+    dataset = ChestXrayDataset()
+    for label in dataset.labels:
+        for key,value in dataset.classes.items():
+            if value in label:
+                weights[key] += 1
+    weights /= np.sum(weights)
+    weights  = 1./weights
+    return torch.Tensor(weights)
 
 def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
                          p_val=0.1, p_test=0.2, shuffle=True,

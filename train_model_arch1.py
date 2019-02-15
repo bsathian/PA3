@@ -35,6 +35,11 @@ else: # Otherwise, train on the CPU
     extras = False
     print("CUDA NOT supported")
 
+
+#Get class imbalance weights
+
+weights = get_weights()
+
 # Setup the training, validation, and testing dataloaders
 train_loader1, val_loader1, test_loader1 = create_split_loaders(batch_size, seed, transform=transform,
                                                              p_val=p_val, p_test=p_test,
@@ -57,7 +62,7 @@ model = model.to(computing_device)
 print("Model on CUDA?", next(model.parameters()).is_cuda)
 
 #TODO: Define the loss criterion and instantiate the gradient descent optimizer
-criterion = torch.nn.MultiLabelSoftMarginLoss() #TODO - loss criteria are defined in the torch.nn package
+criterion = torch.nn.MultiLabelSoftMarginLoss(weights = weights) #TODO - loss criteria are defined in the torch.nn package
 
 #TODO: Instantiate the gradient descent optimizer - use Adam optimizer with default parameters
 optimizer = torch.optim.Adam(model.parameters(),lr = learning_rate) #TODO - optimizers are defined in the torch.optim package

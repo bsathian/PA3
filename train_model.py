@@ -11,7 +11,7 @@ import torch
 
 
 # Setup: initialize the hyperparameters/variables
-num_epochs = 1           # Number of full passes through the dataset
+num_epochs = 50           # Number of full passes through the dataset
 batch_size = 32          # Number of samples in each minibatch
 learning_rate = 0.001
 seed = np.random.seed(1) # Seed the random number generator for reproducibility
@@ -110,7 +110,7 @@ for epoch in range(num_epochs):
         images,labels = images.to(computing_device),labels.to(computing_device)
         outputs = model.forward(images)
         loss = criterion(outputs,labels)
-        temp_validation += loss
+        temp_validation += loss.item()
 
     print("Validation loss after ",epoch," epochs=",temp_validation)
     validation_loss.append(temp_validation)

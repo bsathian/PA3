@@ -202,6 +202,7 @@ def create_split_loaders(batch_size, seed, transform=transforms.ToTensor(),
     # Separate a test split from the training dataset
     test_split = int(np.floor(p_test * len(train_ind)))
     train_ind, test_ind = train_ind[test_split :], train_ind[: test_split]
+    np.savetxt("arch1_test_ind.txt",test_ind)
 
     # Use the SubsetRandomSampler as the iterator for each subset
     sample_train = SubsetRandomSampler(train_ind)

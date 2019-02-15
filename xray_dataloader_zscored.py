@@ -150,7 +150,7 @@ def get_weights():
         for key,value in dataset.classes.items():
             if value in label:
                 weights[key] += 1
-    weights /= np.sum(weights)
+    #weights /= np.sum(weights)
     weights  = 1./weights
     return torch.Tensor(weights)
 

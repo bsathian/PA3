@@ -8,7 +8,7 @@ from xray_dataloader import ChestXrayDataset
 from torchvision import transforms
 
 
-batch_size = 2
+batch_size = 64
 p_val = 0.1
 p_test = 0.2
 
@@ -52,7 +52,6 @@ for minibatch_number,(images,labels) in enumerate(test_loader, 0):
     logits = model(images)
     prediction = (logits.cpu().detach().numpy() > 0).astype(np.int32)
     labelsArray = (labels.cpu().detach().numpy()).astype(np.int32)
-    del logits
 
     for row in range(len(prediction)):
         indexPrediction = np.where(prediction[row] == 1)[0] + 1

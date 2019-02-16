@@ -1,2 +1,19 @@
 CUDA is supported
 Model on CUDA? True
+Epoch 1, average minibatch 0 loss: 0.778
+Epoch 1, average minibatch 50 loss: 24.653
+Epoch 1, average minibatch 100 loss: 9.883
+Epoch 1, average minibatch 150 loss: 5.527
+Epoch 1, average minibatch 200 loss: 4.262
+Epoch 1, average minibatch 250 loss: 3.865
+Epoch 1, average minibatch 300 loss: 3.666
+Epoch 1, average minibatch 350 loss: 3.487
+Epoch 1, average minibatch 400 loss: 3.527
+Epoch 1, average minibatch 450 loss: 3.284
+Epoch 1, average minibatch 500 loss: 3.400
+Epoch 1, average minibatch 550 loss: 3.187
+Epoch 1, average minibatch 600 loss: 3.240
+Epoch 1, average minibatch 650 loss: 3.182
+Epoch 1, average minibatch 700 loss: 3.390
+Epoch 1, average minibatch 750 loss: 3.256
+Epoch 1, average minibatch 800 loss: 3.310

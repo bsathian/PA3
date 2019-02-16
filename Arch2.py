@@ -42,52 +42,71 @@ import os
 
 class Arch2CNN(nn.Module):
     """
+<<<<<<< HEAD
+    conv1 -> maxpool -> conv2 -> maxpool -> conv3 -> conv4 ->maxpool -> conv5 -> conv6 -> maxpool -> conv7 -> conv8 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
+=======
     conv1 -> conv2 -> maxpool -> conv3 -> conv4 -> conv5 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
+>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
     """
 
     def __init__(self):
         super(Arch2CNN, self).__init__()
 
-        # conv1: 1 input channel, 12 output channels, [8x8] kernel size
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=12, kernel_size=8)
+        # conv1: 1 input channel, 4 output channels, [3x3] kernel size
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=3)
 
         # Add batch-normalization to the outputs of conv1
-        self.conv1_normed = nn.BatchNorm2d(12)
+        self.conv1_normed = nn.BatchNorm2d(4)
 
         # Initialized weights using the Xavier-Normal method
         torch_init.xavier_normal_(self.conv1.weight)
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=1)
 
         #TODO: Fill in the remaining initializations replacing each '_' with
         # the necessary value based on the provided specs for each layer
 
-        #TODO: conv2: X input channels, 10 output channels, [8x8] kernel, initialization: xavier
-        self.conv2 = nn.Conv2d(in_channels=12, out_channels=10, kernel_size=8)
-        self.conv2_normed = nn.BatchNorm2d(10)
+        #TODO: conv2: 4 input channels, 8 output channels, [3x3] kernel, initialization: xavier
+        self.conv2 = nn.Conv2d(in_channels=4, out_channels=8, kernel_size=3)
+        self.conv2_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv2.weight)
         #Maxpool
-        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=1)
+        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=1)
 
 
         #TODO: conv3: X input channels, 12 output channels, [8x8] kernel, initialization: xavier
-        self.conv3 = nn.Conv2d(in_channels=10, out_channels=12, kernel_size=8)
-        self.conv3_normed = nn.BatchNorm2d(12)
+        self.conv3 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3)
+        self.conv3_normed = nn.BatchNorm2d(16)
         torch_init.xavier_normal_(self.conv3.weight)
         #TODO: conv4: X input channels, 10 output channels, [6x6] kernel, initialization: xavier
-        self.conv4 = nn.Conv2d(in_channels=12, out_channels=10, kernel_size=6)
-        self.conv4_normed = nn.BatchNorm2d(10)
+        self.conv4 = nn.Conv2d(in_channels=16, out_channels=16, kernel_size=3)
+        self.conv4_normed = nn.BatchNorm2d(16)
         torch_init.xavier_normal_(self.conv4.weight)
+        self.pool3 = nn.MaxPool2d(kernel_size=3, stride=1)
         #TODO: conv5: X input channels, 8 output channels, [5x5] kernel, initialization: xavier
-        self.conv5 = nn.Conv2d(in_channels=10, out_channels=8, kernel_size=5)
-        self.conv5_normed = nn.BatchNorm2d(8)
+        self.conv5 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
+        self.conv5_normed = nn.BatchNorm2d(32)
         torch_init.xavier_normal_(self.conv5.weight)
-
+        
+        self.conv6 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3)
+        self.conv6_normed = nn.BatchNorm2d(32)
+        torch_init.xavier_normal_(self.conv6.weight)
+        self.pool4 = nn.MaxPool2d(kernel_size=3, stride=1)
 
         #TODO: Apply max-pooling with a [3x3] kernel using tiling (*NO SLIDING WINDOW*)
-        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=3)
+        self.conv7 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3)
+        self.conv7_normed = nn.BatchNorm2d(32)
+        torch_init.xavier_normal_(self.conv5.weight)
+        
+        self.conv8 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3)
+        self.conv8_normed = nn.BatchNorm2d(32)
+        torch_init.xavier_normal_(self.conv8.weight)
+        self.pool5 = nn.MaxPool2d(kernel_size=3, stride=1)
+        
 
         # Define 2 fully connected layers:
         #TODO: fc1
-        self.fc1 = nn.Linear(in_features=160*160*8, out_features=512)
+        self.fc1 = nn.Linear(in_features=230*230*32, out_features=512)
+
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
 
@@ -124,15 +143,22 @@ class Arch2CNN(nn.Module):
         # use batch-normalization on its outputs
         batch = func.relu(self.conv1_normed(self.conv1(batch)))
 
+        batch = self.pool1(batch)
         # Apply conv2 and conv3 similarly
         batch = func.relu(self.conv2_normed(self.conv2(batch)))
-        batch = self.pool1(batch)
+        batch = self.pool2(batch)
 
         batch = func.relu(self.conv3_normed(self.conv3(batch)))
         batch = func.relu(self.conv4_normed(self.conv4(batch)))
+        batch = self.pool3(batch)
         batch = func.relu(self.conv5_normed(self.conv5(batch)))
+        batch = func.relu(self.conv6_normed(self.conv6(batch)))
         # Pass the output of conv3 to the pooling layer
-        batch = self.pool2(batch)
+        batch = self.pool4(batch)
+        batch = func.relu(self.conv7_normed(self.conv7(batch)))
+        batch = func.relu(self.conv8_normed(self.conv8(batch)))
+        # Pass the output of conv3 to the pooling layer
+        batch = self.pool5(batch)
 
         # Reshape the output of the conv3 to pass to fully-connected layer
         batch = batch.view(-1, self.num_flat_features(batch))

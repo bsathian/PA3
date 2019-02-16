@@ -42,7 +42,11 @@ import os
 
 class Arch2CNN(nn.Module):
     """
+<<<<<<< HEAD
     conv1 -> maxpool -> conv2 -> maxpool -> conv3 -> conv4 ->maxpool -> conv5 -> conv6 -> maxpool -> conv7 -> conv8 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
+=======
+    conv1 -> conv2 -> maxpool -> conv3 -> conv4 -> conv5 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
+>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
     """
 
     def __init__(self):
@@ -102,6 +106,7 @@ class Arch2CNN(nn.Module):
         # Define 2 fully connected layers:
         #TODO: fc1
         self.fc1 = nn.Linear(in_features=230*230*32, out_features=512)
+
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
 
@@ -137,6 +142,7 @@ class Arch2CNN(nn.Module):
         # Apply first convolution, followed by ReLU non-linearity;
         # use batch-normalization on its outputs
         batch = func.relu(self.conv1_normed(self.conv1(batch)))
+
         batch = self.pool1(batch)
         # Apply conv2 and conv3 similarly
         batch = func.relu(self.conv2_normed(self.conv2(batch)))
@@ -153,7 +159,6 @@ class Arch2CNN(nn.Module):
         batch = func.relu(self.conv8_normed(self.conv8(batch)))
         # Pass the output of conv3 to the pooling layer
         batch = self.pool5(batch)
-
 
         # Reshape the output of the conv3 to pass to fully-connected layer
         batch = batch.view(-1, self.num_flat_features(batch))

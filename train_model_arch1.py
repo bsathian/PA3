@@ -139,7 +139,7 @@ for epoch in range(num_epochs):
         break
 
 print("Training complete after", epoch, "epochs")
-torch.save(model.state_dict(),"arch1.pt")
+torch.save(model.state_dict(),"arch1_dropout.pt")
 
 # In[ ]:
 

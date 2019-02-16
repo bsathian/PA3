@@ -52,7 +52,7 @@ for minibatch_number,(images,labels) in enumerate(test_loader, 0):
     logits = model(images)
     prediction = (logits.cpu().detach().numpy() > 0).astype(np.int32)
     labelsArray = (labels.cpu().detach().numpy()).astype(np.int32)
-
+    del logits
     for row in range(len(prediction)):
         indexPrediction = np.where(prediction[row] == 1)[0] + 1
         indexLabels = np.where(labelsArray[row] == 1)[0] + 1

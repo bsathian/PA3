@@ -45,6 +45,7 @@ test_loader = DataLoader(dataset, batch_size=batch_size,
 confusionMatrix = np.zeros((15,15))
 
 for minibatch_number,(images,labels) in enumerate(test_loader, 0):
+    images, labels = images.to(computing_device), labels.to(computing_device)
     logits = model(images)
     prediction = (logits.detach().numpy() > 0).astype(np.int32)
     labelsArray = (labels.detach().numpy()).astype(np.int32)

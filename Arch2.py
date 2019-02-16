@@ -40,13 +40,13 @@ import os
 
 
 
-class Arch1CNN(nn.Module):
+class Arch2CNN(nn.Module):
     """
     conv1 -> conv2 -> maxpool -> conv3 -> conv4 -> conv5 -> maxpool -> fc1 -> fc2 -> fc3 (outputs)
     """
 
     def __init__(self):
-        super(Arch1CNN, self).__init__()
+        super(Arch2CNN, self).__init__()
 
         # conv1: 1 input channel, 12 output channels, [8x8] kernel size
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=12, kernel_size=8)

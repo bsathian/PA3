@@ -1,10 +1,11 @@
 import numpy as np
-from baseline_cnn import BasicCNN
+#from baseline_cnn import BasicCNN
+from Arch1 import Arch1CNN
 import torch
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import Dataset,DataLoader
 #from Arch1 import Arch1CNN
-from xray_dataloader import ChestXrayDataset
+from xray_dataloader_zscored import ChestXrayDataset
 from torchvision import transforms
 
 
@@ -12,11 +13,11 @@ batch_size = 64
 p_val = 0.1
 p_test = 0.2
 
-transform = transforms.Compose([transforms.Resize((512,512)),transforms.ToTensor()])
+transform = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor()])
 
 #Load model
-model = BasicCNN()
-model.load_state_dict(torch.load("../baseline.pt"))
+model = Arch1CNN()
+model.load_state_dict(torch.load("arch1.pt"))
 model.eval()
 use_cuda =  torch.cuda.is_available()
 
@@ -71,7 +72,7 @@ for minibatch_number,(images,labels) in enumerate(test_loader, 0):
         for i in excessPrediction:
             for j in excessLabels:
                 confusionMatrix[i,j] += 1
-
+np.savetxt('Confusion_matrix_arch1.txt',confusionMatrix)
 
 
 

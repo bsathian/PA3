@@ -90,7 +90,8 @@ class Arch1CNN(nn.Module):
         self.fc1 = nn.Linear(in_features=74*74*8, out_features=512)
         self.fc1_normed = nn.BatchNorm1d(512)
         torch_init.xavier_normal_(self.fc1.weight)
-
+        self.drop = torch.nn.Dropout(p=0.5, inplace=True)
+        
         #TODO: fc2
         self.fc2 = nn.Linear(in_features=512, out_features=128)
         self.fc2_normed = nn.BatchNorm1d(128)
@@ -139,7 +140,10 @@ class Arch1CNN(nn.Module):
 
         # Connect the reshaped features of the pooled conv3 to fc1
         batch =  func.relu(self.fc1_normed(self.fc1(batch)))
+        batch = self.drop(batch)
+        
         batch =  func.relu(self.fc2_normed(self.fc2(batch)))
+        batch = self.drop(batch)
 
         # Connect fc1 to fc2 - this layer is slightly different than the rest (why?)
         batch = self.fc3(batch)

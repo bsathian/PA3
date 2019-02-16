@@ -1,0 +1,2 @@
+CUDA is supported
+Model on CUDA? True

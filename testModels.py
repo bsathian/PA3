@@ -17,7 +17,7 @@ transform = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor
 
 #Load model
 model = Arch1CNN()
-model.load_state_dict(torch.load("arch1.pt"))
+model.load_state_dict(torch.load("arch1_dropout.pt"))
 model.eval()
 use_cuda =  torch.cuda.is_available()
 
@@ -72,7 +72,7 @@ for minibatch_number,(images,labels) in enumerate(test_loader, 0):
         for i in excessPrediction:
             for j in excessLabels:
                 confusionMatrix[i,j] += 1
-np.savetxt('Confusion_matrix_arch1.txt',confusionMatrix)
+np.savetxt('Confusion_matrix_arch1_dropout.txt',confusionMatrix)
 
 
 

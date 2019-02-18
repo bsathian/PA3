@@ -12,15 +12,15 @@ from xray_dataloader_zscored import get_weights
 
 # Setup: initialize the hyperparameters/variables
 num_epochs = 10           # Number of full passes through the dataset
-batch_size = 96          # Number of samples in each minibatch
-learning_rate = 0.001
+batch_size = 16          # Number of samples in each minibatch
+learning_rate = 0.01
 seed = np.random.seed(1) # Seed the random number generator for reproducibility
 p_val = 0.1              # Percent of the overall dataset to reserve for validation
 p_test = 0.2             # Percent of the overall dataset to reserve for testing
 
 #TODO: Convert to Tensor - you can later add other transformations, such as Scaling here
-transform = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor()])
-transform2 = transforms.Compose([transforms.Resize((256,256)),transforms.RandomHorizontalFlip(p=1.0),transforms.ToTensor()])
+#transform = transforms.Compose([transforms.Resize((512,512)),transforms.ToTensor()])
+transform2 = transforms.Compose([transforms.Resize((512,512)),transforms.RandomHorizontalFlip(p=0.5),transforms.ToTensor()])
 
 # Check if your system supports CUDA
 use_cuda = torch.cuda.is_available()
@@ -42,19 +42,19 @@ weights = get_weights()
 weights = weights.to(computing_device)
 
 # Setup the training, validation, and testing dataloaders
-train_loader1, val_loader1, test_loader1 = create_split_loaders(batch_size, seed, transform=transform,
-                                                             p_val=p_val, p_test=p_test,
-                                                             shuffle=True, show_sample=False,
-                                                             extras=extras)
+#train_loader1, val_loader1, test_loader1 = create_split_loaders(batch_size, seed, transform=transform,
+                                                             #p_val=p_val, p_test=p_test,
+                                                             #shuffle=True, show_sample=False,
+                                                             #extras=extras)
 
 train_loader2, val_loader2, test_loader2 = create_split_loaders(batch_size, seed, transform=transform2,
                                                              p_val=p_val, p_test=p_test,
                                                              shuffle=True, show_sample=False,
                                                              extras=extras)
-train_loader_list = [train_loader1,train_loader2]
+train_loader_list = [train_loader2]
 #train_loader = torch.utils.data.DataLoader(torch.utils.data.ConcatDataset([train_loader,train_loader2]))
-val_loader_list = [val_loader1, val_loader2]
-test_loader_list=[test_loader1,test_loader2]
+val_loader_list = [val_loader2]
+test_loader_list=[test_loader2]
 #val_loader = torch.utils.data.ConcatDataset([val_loader,val_loader2])
 #test_loader = torch.utils.data.ConcatDataset([test_loader,test_loader2])
 # Instantiate a BasicCNN to run on the GPU or CPU based on CUDA support
@@ -122,6 +122,7 @@ for epoch in range(num_epochs):
                 N_minibatch_loss = 0.0
 
     print("Finished", epoch + 1, "epochs of training")
+    torch.save(model.state_dict(),"arch2.pt")
 
     #Validation
     temp_validation = 0
@@ -132,9 +133,10 @@ for epoch in range(num_epochs):
             outputs = model(images)
             loss = criterion(outputs,labels)
             temp_validation += loss.item()
+            del outputs, loss
 
-    print("Validation loss after ",epoch," epochs=",temp_validation)
-    validation_loss.append(temp_validation)
+    print("Validation loss after ",epoch," epochs=",temp_validation/(minibatch_count+1))
+    validation_loss.append(temp_validation/(minibatch_count+1))
     if epoch >= 1 and validation_loss[-1] > validation_loss[-2]:
         break
 

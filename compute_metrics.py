@@ -26,7 +26,7 @@ for i in range(15):
 #Write out a LaTeX worthy confusion matrix
 cmPercent =  cm/np.sum(cm,axis = 0) * 100
 
-cmTable = open("cmTable_baseline.txt","w")
+cmTable = open("cmTable_freezevgg.txt","w")
 
 cmTable.write("\\begin{table}\n")
 cmTable.write("\centering\n")

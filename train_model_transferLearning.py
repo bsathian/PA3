@@ -19,12 +19,12 @@ from xray_dataloader_zscored_TL import get_weights,create_split_loaders,ChestXra
 
 
 # Setup: initialize the hyperparameters/variables
-num_epochs = 1           # Number of full passes through the dataset
-<<<<<<< HEAD
+num_epochs = 50         # Number of full passes through the dataset
+#<<<<<<< HEAD
 batch_size = 96       # Number of samples in each minibatch
-=======
-batch_size = 64          # Number of samples in each minibatch
->>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
+#=======
+#batch_size = 64          # Number of samples in each minibatch
+#>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
 learning_rate = 0.001
 seed = np.random.seed(1) # Seed the random number generator for reproducibility
 p_val = 0.1              # Percent of the overall dataset to reserve for validation
@@ -33,7 +33,7 @@ p_test = 0.2             # Percent of the overall dataset to reserve for testing
 #TODO: Convert to Tensor - you can later add other transformations, such as Scaling here
 transform = transforms.Compose([transforms.Resize((224,224)),transforms.ToTensor()])
 transform2 = transforms.Compose([transforms.Resize((224,224)),transforms.RandomHorizontalFlip(p=1.0),transforms.ToTensor()])
-
+#weights = get_weights();
 # Check if your system supports CUDA
 use_cuda = torch.cuda.is_available()
 
@@ -74,17 +74,17 @@ test_loader_list=[test_loader1,test_loader2]
 
 #print("")
 print("1 VGG 16 BN \n 2 VGG 19 BN \n 3 Resnet 34  ")
-<<<<<<< HEAD
+#<<<<<<< HEAD
 #input_model = int(input("Choose the model:"))
 input_model = 2
 input_setting = 1
 print("1 Freeze parameters\n 2 Unfreeze parameters")
 #input_setting = int(input("Enter your choice:"))
-=======
-input_model = int(input("Choose the model:"))
+#=======
+#input_model = int(input("Choose the model:"))
 print("1 Freeze parameters\n 2 Unfreeze parameters")
-input_setting = int(input("Enter your choice:"))
->>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
+#input_setting = int(input("Enter your choice:"))
+#>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
 
 
 
@@ -107,13 +107,6 @@ if input_setting == 1:
         param.requires_grad = False
     for param in model.classifier.parameters():## Freezing all the layers
         param.requires_grad = False
-else:
-<<<<<<< HEAD
-    for param in model.features.parameters():## UnFreezing all the layers
-=======
-    for param in model.features.parameters():## Freezing all the layers
->>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
-        param.requires_grad = True
 # add last linear layer (n_inputs -> 5 flower classes)
 # new layers automatically have requires_grad = True
 last_layer = nn.Linear(n_inputs, 14)
@@ -138,13 +131,13 @@ print("Model on CUDA?", next(model.parameters()).is_cuda)
 
 
 #TODO: Define the loss criterion and instantiate the gradient descent optimizer
-<<<<<<< HEAD
-criterion = torch.nn.MultiLabelSoftMarginLoss() #TODO - loss criteria are defined in the torch.nn package
+#<<<<<<< HEAD
+criterion = torch.nn.MultiLabelSoftMarginLoss(weight = weights) #TODO - loss criteria are defined in the torch.nn package
 #criterion = torch.nn.BCELoss()
-=======
+#=======
 #criterion = torch.nn.MultiLabelSoftMarginLoss() #TODO - loss criteria are defined in the torch.nn package
-criterion = torch.nn.BCELoss()
->>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
+#criterion = torch.nn.BCELoss()
+#>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
 #TODO: Instantiate the gradient descent optimizer - use Adam optimizer with default parameters
 optimizer = torch.optim.Adam(model.classifier[6].parameters(),lr = learning_rate) #TODO - optimizers are defined in the torch.optim package
 
@@ -182,11 +175,11 @@ for epoch in range(num_epochs):
 
             # Perform the forward pass through the network and compute the loss
             outputs = model(images)
-<<<<<<< HEAD
+#<<<<<<< HEAD
             loss = criterion(outputs, labels)
-=======
-            loss = criterion(torch.sigmoid(outputs), labels)
->>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
+#=======
+#            loss = criterion(torch.sigmoid(outputs), labels)
+#>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
 
             # Automagically compute the gradients and backpropagate the loss through the network
             loss.backward()
@@ -212,6 +205,7 @@ for epoch in range(num_epochs):
                 N_minibatch_loss = 0.0
 
     print("Finished", epoch + 1, "epochs of training")
+    torch.save(model.state_dict(),"TL_trained.pt")
 
     #Validation
     temp_validation = 0

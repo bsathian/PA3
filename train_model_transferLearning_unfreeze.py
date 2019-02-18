@@ -21,7 +21,7 @@ from xray_dataloader_zscored_TL import get_weights,create_split_loaders,ChestXra
 # Setup: initialize the hyperparameters/variables
 num_epochs = 50         # Number of full passes through the dataset
 #<<<<<<< HEAD
-batch_size = 96       # Number of samples in each minibatch
+batch_size = 32   # Number of samples in each minibatch
 #=======
 #batch_size = 64          # Number of samples in each minibatch
 #>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
@@ -76,9 +76,12 @@ test_loader_list=[test_loader1,test_loader2]
 print("1 VGG 16 BN \n 2 VGG 19 BN \n 3 Resnet 34  ")
 #<<<<<<< HEAD
 #input_model = int(input("Choose the model:"))
-input_model = 2
+input_model = 3
 input_setting = 0
 print("1 Freeze parameters\n 2 Unfreeze parameters")
+
+
+
 #input_setting = int(input("Enter your choice:"))
 #=======
 #input_model = int(input("Choose the model:"))
@@ -100,7 +103,7 @@ elif input_model == 2:
     n_inputs = model.classifier[6].in_features
 ## VGG_19_bn
 elif input_model == 3:
-    model = models.resnet34(pretrained = True)
+    model = models.resnet34(pretrained = False)
     n_inputs = model.fc.in_features
 if input_setting == 1:
     for param in model.features.parameters():## Freezing all the layers
@@ -118,7 +121,7 @@ elif input_model ==3:
 
 # print out the model structure
 print(model)
-
+model.load_state_dict(torch.load('TL_trained_unfreeze_1.pt'))
 model = model.to(computing_device)
 print("Model on CUDA?", next(model.parameters()).is_cuda)
 
@@ -139,7 +142,7 @@ criterion = torch.nn.MultiLabelSoftMarginLoss(weight = weights) #TODO - loss cri
 #criterion = torch.nn.BCELoss()
 #>>>>>>> 6652e3cfb72835ac4a7c802c9a703b59d5f63ae6
 #TODO: Instantiate the gradient descent optimizer - use Adam optimizer with default parameters
-optimizer = torch.optim.Adam(model.classifier[6].parameters(),lr = learning_rate) #TODO - optimizers are defined in the torch.optim package
+optimizer = torch.optim.Adam(model.parameters(),lr = learning_rate) #TODO - optimizers are defined in the torch.optim package
 
 print("initialised criterion and architecture!!")
 
@@ -205,7 +208,7 @@ for epoch in range(num_epochs):
                 N_minibatch_loss = 0.0
 
     print("Finished", epoch + 1, "epochs of training")
-    torch.save(model.state_dict(),"TL_trained.pt")
+    torch.save(model.state_dict(),"TL_trained_unfreeze_2.pt")
 
     #Validation
     temp_validation = 0
@@ -216,6 +219,7 @@ for epoch in range(num_epochs):
             outputs = model(images)
             loss = criterion(outputs,labels)
             temp_validation += loss.item()
+            del outputs,loss
 
     print("Validation loss after ",epoch," epochs=",temp_validation)
     validation_loss.append(temp_validation)
@@ -223,4 +227,4 @@ for epoch in range(num_epochs):
         break
 
 print("Training complete after", epoch, "epochs")
-torch.save(model.state_dict(),"TL_trained.pt")
+torch.save(model.state_dict(),"TL_trained_unfreeze_2.pt")

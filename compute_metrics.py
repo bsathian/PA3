@@ -26,13 +26,13 @@ for i in range(15):
 #Write out a LaTeX worthy confusion matrix
 cmPercent =  cm/np.sum(cm,axis = 0) * 100
 
-cmTable = open("cmTable_arch2.txt","w+")
+cmTable = open("cmTable_ensemble.txt","w+")
 
 cmTable.write("\\begin{table}\n")
 cmTable.write("\centering\n")
 
 cmTable.write("\\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}\n")
-cmTable.write("&0&1&2&3&4&5&6&7&8&9&10&11&12&13&14\\\n")
+cmTable.write("&0&1&2&3&4&5&6&7&8&9&10&11&12&13&14\\\\ \n")
 cmTable.write("\\hline\n")
 for i in range(len(cmPercent)):
     cmTable.write(str(i)+"&")

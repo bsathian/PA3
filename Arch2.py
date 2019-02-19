@@ -86,7 +86,7 @@ class Arch2CNN(nn.Module):
         self.conv5 = nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3)
         self.conv5_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv5.weight)
-        
+
         self.conv6 = nn.Conv2d(in_channels=8, out_channels=8, kernel_size=3)
         self.conv6_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv6.weight)
@@ -96,12 +96,12 @@ class Arch2CNN(nn.Module):
         self.conv7 = nn.Conv2d(in_channels=8, out_channels=8, kernel_size=3)
         self.conv7_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv7.weight)
-        
+
         self.conv8 = nn.Conv2d(in_channels=8, out_channels=8, kernel_size=3)
         self.conv8_normed = nn.BatchNorm2d(8)
         torch_init.xavier_normal_(self.conv8.weight)
         self.pool5 = nn.MaxPool2d(kernel_size=4, stride=4)
-        
+
 
         # Define 2 fully connected layers:
         #TODO: fc1

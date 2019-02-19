@@ -68,7 +68,8 @@ for (images1,labels),(images2,labels2) in zip(test_loader,test_loader2):
     arch2model.cpu()
     # Taking the union to retain as much predictions as possible
     # Each model could have learned a feature better and thus would predict some classes better
-    prediction = np.union1d(predictionarch1,predictionarch2)
+    prediction = predictionarch1+predictionarch2
+    prediction[prediction == 2] = 1
     labelsArray = (labels.cpu().detach().numpy()).astype(np.int32)
     
     for row in range(len(prediction)):

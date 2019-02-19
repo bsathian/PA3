@@ -2,7 +2,9 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from baseline_cnn import BasicCNN
+from Arch2 import Arch2CNN
 import sys
+
 
 
 def visualize_weights(weights):
@@ -15,11 +17,15 @@ def visualize_weights(weights):
         plt.subplot(n_rows,n_cols,i+1)
         plt.imshow(weights[i][0])
 
-    plt.show()
+    #plt.show()
+    plt.savefig("weights.pdf")
 
 
 
-model= BasicCNN()
+
+#model= BasicCNN()
+model = Arch2CNN()
 model.load_state_dict(torch.load(sys.argv[1]))
 
 visualize_weights(model.conv1.weight)
+

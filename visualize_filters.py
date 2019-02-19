@@ -2,9 +2,11 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from baseline_cnn import BasicCNN
+<<<<<<< HEAD
 from Arch1 import Arch1CNN
 from Arch2 import Arch2CNN
 import sys
+
 
 
 def visualize_weights(weights):
@@ -30,3 +32,4 @@ model = BasicCNN()
 #model = Arch2CNN()
 model.load_state_dict(torch.load(sys.argv[1]))
 visualize_weights(model.conv3.weight)
+
